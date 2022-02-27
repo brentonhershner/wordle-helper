@@ -1,15 +1,3 @@
-// import React from "react";
-// import ReactDOM from "react-dom";
-// // import "./index.css";
-// import WordleHelper from "../components/WordleHelper.js";
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <WordleHelper />
-//   </React.StrictMode>,
-//   document.getElementById("root")
-// );
-
 import React, { useEffect, useState } from "react";
 import "../styles/WordleHelper.css";
 import words from "an-array-of-english-words";
@@ -26,8 +14,6 @@ const WordleHelper = () => {
   const changeLetter = (e, position) => {
     const form = e.target.form;
     const key = e.keyCode;
-    // console.log(e.key);
-    // console.log(e.keyCode);
     let newLetter = "";
     if (key >= 65 && key <= 90) {
       newLetter = e.key;
@@ -58,10 +44,7 @@ const WordleHelper = () => {
   };
 
   const filterLocated = (word) => {
-    // return true to reject
-    // if any letter does not match, return true
     return located.every((letter, index) => {
-      // letter is empty or letter matches letter in word
       return letter === "" || letter === word[index];
     });
   };
