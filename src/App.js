@@ -1,10 +1,22 @@
-import React, { useEffect, useState, useCallback } from "react";
-import "./App.css";
+// import React from "react";
+// import ReactDOM from "react-dom";
+// // import "./index.css";
+// import WordleHelper from "../components/WordleHelper.js";
+
+// ReactDOM.render(
+//   <React.StrictMode>
+//     <WordleHelper />
+//   </React.StrictMode>,
+//   document.getElementById("root")
+// );
+
+import React, { useEffect, useState } from "react";
+import "../styles/WordleHelper.css";
 import words from "an-array-of-english-words";
 
 const words5letters = words.filter((word) => word.length === 5);
 
-const App = () => {
+const WordleHelper = () => {
   const WORD_DISPLAY_LIMIT = 500;
 
   const [possible, setPossible] = useState(words5letters);
@@ -12,33 +24,31 @@ const App = () => {
   const [located, setLocated] = useState([...Array(5).fill("")]);
 
   const changeLetter = (e, position) => {
+    const form = e.target.form;
     const key = e.keyCode;
     // console.log(e.key);
     // console.log(e.keyCode);
     let newLetter = "";
     if (key >= 65 && key <= 90) {
       newLetter = e.key;
+      if (position < form.elements.length - 1) {
+        form.elements[position + 1].focus();
+      }
     } else if (key === 8 || key === 46) {
       newLetter = "";
     } else if (key === 9) {
-      // change focus
       return;
     } else {
       return;
     }
     const newLocated = located.slice();
-    newLocated.splice(position, 1, newLetter);
+    newLocated.splice(position, 1, newLetter.toLowerCase());
     setLocated(newLocated);
-    const form = e.target.form;
-    if (position < form.elements.length - 1) {
-      form.elements[position + 1].focus();
-    }
     e.preventDefault();
   };
 
   const updateExcluded = (e) => {
-    console.log(`update Excluded: ${e.target.value}`);
-    setExcluded(e.target.value);
+    setExcluded(e.target.value.toLowerCase());
   };
 
   const filterExcluded = (word) => {
@@ -58,15 +68,11 @@ const App = () => {
 
   useEffect(() => {
     if (!excluded) {
-      console.log("make all available");
-      console.log(words5letters.length);
       setPossible(words5letters);
     }
     const updatedList = words5letters
       .filter(filterExcluded)
       .filter(filterLocated);
-    // (words5letters, excluded);
-    // const updatedList2 = filterLocated(updatedList, located);
 
     setPossible(updatedList);
   }, [excluded, located]);
@@ -79,7 +85,6 @@ const App = () => {
     <div className="App">
       <header className="App-header">
         <h1>Wordle Helper</h1>
-        <h2 className="label">{possible.length} possible words</h2>
 
         <h2 className="label">Not Used Letters</h2>
         <input
@@ -104,20 +109,31 @@ const App = () => {
             );
           })}
         </form>
-        <ul>
-          {possible.slice(0, WORD_DISPLAY_LIMIT).map((word) => (
-            <li key={word}>{word}</li>
-          ))}
-        </ul>
-        {possible.length > WORD_DISPLAY_LIMIT && (
-          <p key="last">
-            Only displaying the first {WORD_DISPLAY_LIMIT} words. Filter some
-            more.
-          </p>
-        )}
       </header>
+      <div className="results">
+        <h2 className="label">{possible.length} possible words</h2>
+        {excluded || !located.every((l) => l === "") ? (
+          <>
+            <ul className="list">
+              {possible.slice(0, WORD_DISPLAY_LIMIT).map((word) => (
+                <li key={word}>{word}</li>
+              ))}
+            </ul>
+            <>
+              {possible.length > WORD_DISPLAY_LIMIT && (
+                <p key="last">
+                  Only displaying the first {WORD_DISPLAY_LIMIT} words. Filter
+                  some more.
+                </p>
+              )}
+            </>
+          </>
+        ) : (
+          <p>Try to filter down the list of words using the fields above.</p>
+        )}
+      </div>
     </div>
   );
 };
 
-export default App;
+export default WordleHelper;
