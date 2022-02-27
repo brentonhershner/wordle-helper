@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import { words } from "./words.js";
+import { Helmet } from "react-helmet";
 import unique from "just-unique";
+
+const isValidInput = (input) => !!input.match(/^[a-zA-Z]*$/);
 
 const WordleHelper = () => {
   const WORD_DISPLAY_LIMIT = 500;
@@ -11,45 +14,50 @@ const WordleHelper = () => {
   const [misplaced, setMisplaced] = useState("");
   const [located, setLocated] = useState(Array(5).fill(""));
 
+  const isFiltered = excluded || misplaced || !located.every((l) => !l);
+
   const changeLetter = (e, position) => {
-    const form = e.target.form;
-    const key = e.keyCode;
-    let newLetter = "";
-    if (key >= 65 && key <= 90) {
-      // a-z keys
-      newLetter = e.key;
-      if (position < form.elements.length - 1) {
-        form.elements[position + 1].focus();
-      }
-    } else if (key === 9) {
-      // tab
-      return;
-    } else if (key === 46) {
-      // forward delete
-      newLetter = "";
-    } else if (key === 8) {
-      // backspace
-      newLetter = "";
-      if (position > 0) {
-        form.elements[position - 1].focus();
-      }
-    } else {
+    const newLetter = e.target.value.slice(-1);
+    if (!isValidInput(newLetter)) {
       return;
     }
     const newLocated = located.slice();
     newLocated.splice(position, 1, newLetter.toUpperCase());
     setLocated(newLocated);
-    e.preventDefault();
+
+    if (newLetter && e.target.nextSibling) {
+      e.target.nextSibling.focus();
+    } else if (e.target.previousSibling) {
+      e.target.previousSibling.focus();
+    }
+  };
+
+  const deselect = (e) => {
+    e.target.selectionStart = e.target.value.length;
+  };
+
+  const onKeyDown = (e) => {
+    if (!e.target.value && e.key === "Backspace" && e.target.previousSibling) {
+      e.target.previousSibling.focus();
+      e.preventDefault();
+    }
   };
 
   const updateExcluded = (e) => {
+    if (!isValidInput(e.target.value)) {
+      return;
+    }
     setExcluded(unique(e.target.value.toUpperCase().split("")).join(""));
   };
 
   const updateMisplaced = (e) => {
+    if (!isValidInput(e.target.value)) {
+      return;
+    }
     setMisplaced(e.target.value.toUpperCase());
   };
 
+  // TODO: replace these predicate filter functions with a class for better testing
   const filterLocated = (word) => {
     return located.every((letter, index) => {
       return letter === "" || letter === word[index];
@@ -92,6 +100,21 @@ const WordleHelper = () => {
 
   return (
     <div className="App">
+      <Helmet>
+        <meta charSet="utf-8" />
+        <meta
+          name="description"
+          content="Wordle Helper. A simple app made in a few hours to help with wordle."
+        />
+        <meta
+          name="keywords"
+          content="Wordle, Helper, Wordle Helper, Wordle Help, Wordle Cheat, Wordle Tips"
+        />
+        <meta name="author" content="Brenton Hershner" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="revised" content="BrentonHershner, 7/11/2021" />
+        <title>WordleHelper</title>
+      </Helmet>
       <header className="App-header">
         <h1>Wordle Helper</h1>
 
@@ -105,7 +128,8 @@ const WordleHelper = () => {
                 value={value}
                 className="letter"
                 type={"text"}
-                onKeyDown={(e) => changeLetter(e, position)}
+                onChange={(e) => changeLetter(e, position)}
+                onKeyDown={onKeyDown}
               />
             );
           })}
@@ -116,6 +140,7 @@ const WordleHelper = () => {
             name="misplaced"
             type={"text"}
             value={misplaced}
+            onFocus={deselect}
             onChange={updateMisplaced}
           />
 
@@ -125,14 +150,15 @@ const WordleHelper = () => {
             name="rejects"
             type={"text"}
             value={excluded}
+            onFocus={deselect}
             onChange={updateExcluded}
           />
         </form>
       </header>
       <div className="results">
-        <h2 className="label">{possible.length} possible words</h2>
-        {excluded || misplaced || !located.every((l) => !l) ? (
+        {isFiltered ? (
           <>
+            <h2 className="label">{possible.length} possible words</h2>
             <ul className="list">
               {possible.slice(0, WORD_DISPLAY_LIMIT).map((word) => (
                 <li key={word}>{word}</li>
