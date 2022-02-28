@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import "./App.css";
-import { words } from "./words.js";
+import "../styles/styles.css";
+import { words } from "../lib/words.js";
 import { Helmet } from "react-helmet";
 import unique from "just-unique";
 
@@ -111,13 +111,16 @@ const WordleHelper = () => {
           content="Wordle, Helper, Wordle Helper, Wordle Help, Wordle Cheat, Wordle Tips"
         />
         <meta name="author" content="Brenton Hershner" />
+        <meta name="email" content="brenthershner@gmail.com" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="revised" content="BrentonHershner, 7/11/2021" />
+        <meta name="revised" content="BrentonHershner, 2/27/2022" />
         <title>WordleHelper</title>
       </Helmet>
       <header className="App-header">
         <h1>Wordle Helper</h1>
-
+        <h3>
+          made by <a href="https://brentonhershner.com">Brenton Hershner</a>
+        </h3>
         <h2 className="label">Correct Letters</h2>
         <form className="inputs">
           {located.map((value, position) => {
