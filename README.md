@@ -1,4 +1,4 @@
-# Wordle Helper
+# [WordleHelper.dev](https://wordlehelper.dev/)
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/139c813e-6f05-4d86-9822-f438448c439a/deploy-status)](https://app.netlify.com/sites/wordlehelper-dev/deploys)
 
