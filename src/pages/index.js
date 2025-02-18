@@ -132,6 +132,7 @@ const WordleHelper = () => {
                 className="letter"
                 type={"text"}
                 onChange={(e) => changeLetter(e, position)}
+                onFocus={(e) => e.target.select()}
                 onKeyDown={onKeyDown}
               />
             );
